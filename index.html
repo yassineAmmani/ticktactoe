@@ -1,45 +1,1424 @@
 <!DOCTYPE html>
-<html lang="pl">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyse Financière - Présentation des Résultats</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .slide {
+            display: none;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .active-slide {
+            display: block;
+        }
+        .company-color-renault { background-color: #FFD500; }
+        .company-color-stellantis { background-color: #7DDA58; }
+        .company-color-volvo { background-color: #98F5F9; }
+        .company-color-bmw { background-color: #E4080A; }
+        .company-color-daimler { background-color: #CECECE; }
+        .company-color-volkswagen { background-color: #5A63ED; }
+        .chart-container {
+            border-radius: 0.5rem;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 1rem 0;
+            overflow: hidden;
+            background-color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .chart-container:hover {
+            box-shadow: 0 0 15px rgba(79, 70, 229, 0.3);
+            transform: scale(1.02);
+        }
+        .chart-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.9);
+            padding: 20px;
+        }
+        .modal-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 90%;
+        }
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .anomaly-indicator {
+            color: #e53e3e;
+            font-weight: bold;
+        }
+        .progress-bar {
+            height: 6px;
+            background-color: #e2e8f0;
+            border-radius: 3px;
+            margin-top: 1rem;
+        }
+        .progress {
+            height: 100%;
+            background-color: #4f46e5;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+        .category-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .category-badge.good {
+            background-color: #68D391;
+            color: #276749;
+        }
+        .category-badge.average {
+            background-color: #F6E05E;
+            color: #975A16;
+        }
+        .category-badge.poor {
+            background-color: #FC8181;
+            color: #9B2C2C;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Navigation Controls -->
+    <div class="fixed bottom-4 right-4 z-50 flex space-x-2">
+        <button id="prevBtn" class="bg-indigo-600 text-white p-3 rounded-full shadow-lg hover:bg-indigo-700 transition">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <button id="nextBtn" class="bg-indigo-600 text-white p-3 rounded-full shadow-lg hover:bg-indigo-700 transition">
+            <i class="fas fa-arrow-right"></i>
+        </button>
+    </div>
 
-    <title>Tic Tac Toe</title>
-    
-    <!-- import the webpage's stylesheet -->
-    <link rel="stylesheet" href="style.css">
-    
+    <!-- Progress Bar -->
+    <div class="fixed top-0 left-0 right-0 z-50">
+        <div class="progress-bar">
+            <div id="progress" class="progress" style="width: 0%"></div>
+        </div>
+    </div>
 
-    <link rel="icon" href="https://cdn.glitch.com/3a64b184-c0e3-4213-8a2d-7907a1bdbabe%2Ffav.JPG?v=1623189441713">
-    
-    <!-- import the webpage's javascript file -->
-    
-  </head>  
-  <body>
-<h1>Tic Tac Toe</h1>
-  <table>
-  <!-- the first row in the table-->
-    <tr>
-      <td><button class="gameButton">0</button></td>
-      <td><button class="gameButton">1</button></td>
-      <td><button class="gameButton">2</button></td>
-    </tr>
-  <!--the second row in the table-->
-    <tr>
-      <td><button class="gameButton">3</button></td>
-      <td><button class="gameButton">4</button></td>
-      <td><button class="gameButton">5</button></td>
-    </tr>
-  <!--the third row in the table-->
-    <tr>
-      <td><button class="gameButton">6</button></td>
-      <td><button class="gameButton">7</button></td>
-      <td><button class="gameButton">8</button></td>
-    </tr>
-  </table>
-<!-- here the game info will be displayed-->
-<h2 id="gameInfo">Example text</h2>
-<script src="script.js"></script>
+    <!-- Slides -->
+    <div class="container mx-auto">
+<!-- Slide 1 - Title -->
+<div class="slide active-slide">
+    <div class="flex flex-col items-center justify-center h-full text-center relative">
+        <!-- Background pattern -->
+        <div class="absolute inset-0 overflow-hidden opacity-10 pointer-events-none">
+            <div class="absolute -top-10 -left-10 w-64 h-64 rounded-full bg-indigo-500"></div>
+            <div class="absolute top-1/3 -right-10 w-80 h-80 rounded-full bg-indigo-300"></div>
+            <div class="absolute -bottom-20 left-1/4 w-96 h-96 rounded-full bg-indigo-400"></div>
+        </div>
+        
+        <div class="bg-white p-10 rounded-xl shadow-2xl max-w-3xl relative z-10 transform transition-all duration-500 hover:shadow-3xl">
+            
+            <h1 class="text-5xl md:text-6xl font-bold text-indigo-800 mb-8 tracking-tight">
+                Analyse Financière des 
+                <span class="bg-gradient-to-r from-indigo-600 to-indigo-800 text-transparent bg-clip-text">
+                    Constructeurs Automobiles
+                </span>
+            </h1>
+            
+            <p class="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
+                Visualisation des ratios financiers et détection d'anomalies
+            </p>
+            
+            <div class="grid grid-cols-6 gap-3 mb-8 max-w-md mx-auto">
+                <div class="flex flex-col items-center">
+                    <div class="company-color-renault w-12 h-12 rounded-full shadow-md transform transition-transform hover:scale-110"></div>
+                    <span class="mt-2 text-xs text-gray-600">Renault</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="company-color-stellantis w-12 h-12 rounded-full shadow-md transform transition-transform hover:scale-110"></div>
+                    <span class="mt-2 text-xs text-gray-600">Stellantis</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="company-color-volvo w-12 h-12 rounded-full shadow-md transform transition-transform hover:scale-110"></div>
+                    <span class="mt-2 text-xs text-gray-600">Volvo</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="company-color-bmw w-12 h-12 rounded-full shadow-md transform transition-transform hover:scale-110"></div>
+                    <span class="mt-2 text-xs text-gray-600">BMW</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="company-color-daimler w-12 h-12 rounded-full shadow-md transform transition-transform hover:scale-110"></div>
+                    <span class="mt-2 text-xs text-gray-600">Daimler</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="company-color-volkswagen w-12 h-12 rounded-full shadow-md transform transition-transform hover:scale-110"></div>
+                    <span class="mt-2 text-xs text-gray-600">Volkswagen</span>
+                </div>
+            </div>
+            
+            <p class="text-gray-500 flex items-center justify-center">
+                <i class="fas fa-chart-line text-indigo-500 mr-2"></i>
+                Présentation interactive des résultats d'analyse
+            </p>
+             <div class="absolute -bottom+8 left-1/2 transform -translate-x-1/2 bg-indigo-600 text-white py-1 px-4 rounded-full text-sm font-semibold">
+                Analyse 2020-2023
+            </div>
+            <div class="absolute -bottom-10 left-1/2 transform -translate-x-1/2">
+                <button class="animate-bounce bg-indigo-600 text-white rounded-full p-2 shadow-lg transition hover:bg-indigo-700">
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 2 - Introduction -->
+<div class="slide">
+    <div class="bg-white rounded-xl shadow-lg p-0 max-w-4xl mx-auto overflow-hidden">
+        <!-- Header with icon and gradient background -->
+        <div class="bg-gradient-to-r from-indigo-600 to-indigo-800 p-6 text-white flex items-center">
+            <div class="bg-white rounded-full p-3 mr-4">
+                <i class="fas fa-info-circle text-indigo-700 text-2xl"></i>
+            </div>
+            <h2 class="text-3xl font-bold">
+                Introduction à l'Analyse
+            </h2>
+        </div>
+        
+        <div class="p-8 space-y-6 text-gray-700">
+            <div class="flex space-x-4">
+                <div class="w-1 bg-indigo-500 rounded-full"></div>
+                <p class="flex-1">
+                    Cette analyse porte sur les principaux ratios financiers des constructeurs automobiles européens sur plusieurs années (2020-2023), permettant une évaluation complète de leur évolution post-pandémie.
+                </p>
+            </div>
+            
+            <div class="my-8">
+                <h3 class="text-xl font-semibold text-indigo-700 mb-4 flex items-center">
+                    <i class="fas fa-building text-indigo-500 mr-3"></i>
+                    Entreprises étudiées
+                </h3>
+                
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div class="bg-gray-50 rounded-lg p-4 flex items-center transition-transform hover:transform hover:scale-105 hover:shadow-md">
+                        <div class="company-color-renault w-10 h-10 rounded-full mr-3 flex-shrink-0"></div>
+                        <div>
+                            <span class="font-semibold">Renault</span>
+                            <div class="text-xs text-gray-500">Groupe français</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-lg p-4 flex items-center transition-transform hover:transform hover:scale-105 hover:shadow-md">
+                        <div class="company-color-stellantis w-10 h-10 rounded-full mr-3 flex-shrink-0"></div>
+                        <div>
+                            <span class="font-semibold">Stellantis</span>
+                            <div class="text-xs text-gray-500">Fusion PSA-FCA</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-lg p-4 flex items-center transition-transform hover:transform hover:scale-105 hover:shadow-md">
+                        <div class="company-color-volvo w-10 h-10 rounded-full mr-3 flex-shrink-0"></div>
+                        <div>
+                            <span class="font-semibold">Volvo</span>
+                            <div class="text-xs text-gray-500">Groupe suédois</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-lg p-4 flex items-center transition-transform hover:transform hover:scale-105 hover:shadow-md">
+                        <div class="company-color-bmw w-10 h-10 rounded-full mr-3 flex-shrink-0"></div>
+                        <div>
+                            <span class="font-semibold">BMW</span>
+                            <div class="text-xs text-gray-500">Groupe allemand</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-lg p-4 flex items-center transition-transform hover:transform hover:scale-105 hover:shadow-md">
+                        <div class="company-color-daimler w-10 h-10 rounded-full mr-3 flex-shrink-0"></div>
+                        <div>
+                            <span class="font-semibold">Daimler</span>
+                            <div class="text-xs text-gray-500">Groupe allemand</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-lg p-4 flex items-center transition-transform hover:transform hover:scale-105 hover:shadow-md">
+                        <div class="company-color-volkswagen w-10 h-10 rounded-full mr-3 flex-shrink-0"></div>
+                        <div>
+                            <span class="font-semibold">Volkswagen</span>
+                            <div class="text-xs text-gray-500">Groupe allemand</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded-r-lg">
+                <h3 class="font-semibold text-indigo-800">
+                    <i class="fas fa-bullseye text-indigo-600 mr-2"></i>
+                    Objectifs de l'Analyse
+                </h3>
+                <ul class="mt-2 space-y-2 pl-6">
+                    <li class="flex items-start">
+                        <i class="fas fa-chart-line text-indigo-500 mt-1 mr-2"></i>
+                        <span>Identifier les tendances et évolutions des ratios financiers</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-balance-scale text-indigo-500 mt-1 mr-2"></i>
+                        <span>Comparer les performances entre constructeurs et années</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-search text-indigo-500 mt-1 mr-2"></i>
+                        <span>Détecter les anomalies et valeurs aberrantes dans les données</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-robot text-indigo-500 mt-1 mr-2"></i>
+                        <span>Classifier les entreprises par machine learning</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+        <!-- Slide 3 - Méthodologie -->
+        <div class="slide">
+            <div class="bg-white rounded-xl shadow-lg p-8 max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold text-indigo-700 mb-6">
+                    <i class="fas fa-flask text-indigo-500 mr-3"></i>
+                    Méthodologie d'Analyse
+                </h2>
+                <div class="space-y-6">
+                    <div class="flex items-start">
+                        <div class="bg-indigo-100 p-3 rounded-full mr-4">
+                            <i class="fas fa-database text-indigo-600"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-lg text-gray-800">Collecte des Données</h3>
+                            <p class="text-gray-600">
+                                Extraction des ratios financiers depuis un fichier Excel standardisé avec identification automatique des entreprises et années.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="bg-indigo-100 p-3 rounded-full mr-4">
+                            <i class="fas fa-chart-bar text-indigo-600"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-lg text-gray-800">Visualisation</h3>
+                            <p class="text-gray-600">
+                                Création de graphiques en barres pour chaque ratio, avec une couleur distinctive par entreprise et annotation des valeurs.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="bg-indigo-100 p-3 rounded-full mr-4">
+                            <i class="fas fa-exclamation-triangle text-indigo-600"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-lg text-gray-800">Détection d'Anomalies</h3>
+                            <p class="text-gray-600">
+                                Utilisation de la méthode IQR (Interquartile Range) avec seuils à 1.5×IQR pour identifier les valeurs aberrantes potentielles.
+                            </p>
+                            <div class="mt-2 text-sm">
+                                <p class="font-semibold">Procédure IQR :</p>
+                                <ol class="list-decimal pl-5 space-y-1">
+                                    <li>Calcul du premier quartile (Q1) et du troisième quartile (Q3)</li>
+                                    <li>Calcul de l'écart interquartile : IQR = Q3 - Q1</li>
+                                    <li>Définition des seuils : Seuil inf. = Q1 - 1.5×IQR, Seuil sup. = Q3 + 1.5×IQR</li>
+                                    <li>Marquage des valeurs en dehors de ces seuils comme anomalies potentielles</li>
+                                </ol>
+                            </div>
+                            <div class="mt-2 p-2 bg-gray-50 rounded-lg border border-gray-200 text-sm">
+                                <p class="italic">Exemple: Pour le ROE, la moyenne ajustée est de 15.2%, avec Q1 ≈ 7% et Q3 ≈ 23%</p>
+                                <p class="italic">IQR = 16%, donc les seuils sont environ 1.5% et 28.9%</p>
+                                <p class="italic">Renault 2020 avec -32% est clairement en dehors de ces seuils → Anomalie</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="bg-indigo-100 p-3 rounded-full mr-4">
+                            <i class="fas fa-balance-scale text-indigo-600"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-lg text-gray-800">Échelle Relative</h3>
+                            <p class="text-gray-600">
+                                Activation automatique d'une échelle logarithmique lorsque les valeurs varient considérablement pour améliorer la lisibilité.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4 - Exemple de Graphique -->
+        <div class="slide">
+            <div class="bg-white rounded-xl shadow-lg p-8 max-w-6xl mx-auto">
+                <h2 class="text-3xl font-bold text-indigo-700 mb-6">
+                    <i class="fas fa-chart-line text-indigo-500 mr-3"></i>
+                    Exemple de Visualisation - ROE
+                </h2>
+                
+                <div class="chart-container">
+                    <img src="https://ucarecdn.com/52470fbc-b2e5-4115-bca7-b2c04b4ad401/roa_return_on_assets_by_company.png" alt="Graphique ROE">
+                </div>
+                
+                <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="font-semibold text-lg text-gray-800 mb-3">Caractéristiques du Graphique</h3>
+                        <ul class="space-y-2 text-gray-700">
+                            <li class="flex items-start">
+                                <i class="fas fa-palette text-indigo-500 mt-1 mr-2"></i>
+                                <span>Couleurs uniques par entreprise pour une identification visuelle immédiate</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-calendar-alt text-indigo-500 mt-1 mr-2"></i>
+                                <span>Évolution temporelle visible grâce au regroupement par année</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-hashtag text-indigo-500 mt-1 mr-2"></i>
+                                <span>Valeurs numériques affichées directement sur les barres</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h3 class="font-semibold text-lg text-gray-800 mb-3">Légende des Anomalies</h3>
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                            <div class="flex items-center mb-2">
+                                <div class="w-6 h-6 border-2 border-red-500 rounded mr-2 flex items-center justify-center">
+                                    <i class="fas fa-star text-red-500 text-xs"></i>
+                                </div>
+                                <span class="text-red-700">Marqueur d'anomalie</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-6 h-6 bg-white border-2 border-red-500 rounded mr-2" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 2px, #E4080A 2px, #E4080A 4px);"></div>
+                                <span class="text-red-700">Motif hachuré pour les barres anormales</span>
+                            </div>
+                        </div>
+                        <p class="mt-3 text-sm text-gray-600">
+                            Les anomalies sont calculées en comparant chaque valeur aux seuils statistiques dérivés de la distribution globale.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+   <!-- Slide 5 - Ratios Généraux -->
+<div class="slide">
+    <div class="bg-white rounded-xl shadow-lg p-8 max-w-6xl mx-auto">
+        <h2 class="text-3xl font-bold text-indigo-700 mb-6">
+            <i class="fas fa-cogs text-indigo-500 mr-3"></i>
+            Analyse des Ratios Généraux
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Autonomie Financière</h3>
+                <div class="chart-container" style="height: 250px;">
+                    <img src="https://ucarecdn.com/c1d8e63e-aad2-453a-9cf4-45c1d41fc9b7/-/preview/1000x533/" alt="Graphique autonomie financière">
+                </div>
+                <div class="mt-4 text-sm text-gray-700">
+                    <p>Mesure la part des fonds propres dans le total du bilan.</p>
+                    <p class="mt-2"><span class="font-semibold">Interprétation :</span> >40% indique une structure solide, <20% signale une forte dépendance à l'endettement.</p>
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Financement des Immobilisations</h3>
+                <div class="chart-container" style="height: 250px;">
+                    <img src="https://ucarecdn.com/c9805acc-0d3f-415a-8ae9-5ae0064912a9/financement_des_immobilisations_by_company.png" alt="Graphique financement des immobilisations">
+                </div>
+                <div class="mt-4 text-sm text-gray-700">
+                    <p>Mesure la couverture des immobilisations par des ressources stables.</p>
+                    <p class="mt-2"><span class="font-semibold">Cible :</span> ≥1 indique une situation saine où les immobilisations sont financées par des ressources à long terme.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Solvabilité Générale</h3>
+                <div class="chart-container" style="height: 250px;">
+                    <img src="https://ucarecdn.com/1430d014-aa01-46a7-a6c0-03047069cac1/solvabilit_gnrale_by_company.png" alt="Graphique solvabilité générale">
+                </div>
+                <div class="mt-4 text-sm text-gray-700">
+                    <p>Capacité de l'entreprise à faire face à ses dettes totales.</p>
+                    <p class="mt-2"><span class="font-semibold">Interprétation :</span> >40% indique une bonne solvabilité, <20% signale une situation fragile.</p>
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Liquidité Générale</h3>
+                <div class="chart-container" style="height: 250px;">
+                    <img src="https://ucarecdn.com/f8a5e868-2469-49e6-bdce-84f7cb98ea6b/liquidit_gnrale_by_company.png" alt="Graphique liquidité générale">
+                </div>
+                <div class="mt-4 text-sm text-gray-700">
+                    <p>Mesure la capacité à honorer les dettes à court terme avec les actifs à court terme.</p>
+                    <p class="mt-2"><span class="font-semibold">Cible :</span> ≥1.5 indique une situation confortable.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-6">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Productivité</h3>
+            <div class="chart-container" style="height: 300px;">
+                <img src="https://ucarecdn.com/8a7d7a60-57a7-439c-a969-17289ac2e1df/productivit_relative_scale.png" alt="Graphique productivité">
+            </div>
+            <div class="mt-4 text-sm text-gray-700">
+                <p>Mesure le chiffre d'affaires généré par employé.</p>
+                <p class="mt-2"><span class="font-semibold">Interprétation :</span> Un ratio élevé indique une bonne efficacité des ressources humaines.</p>
+            </div>
+        </div>
+        
+        <div class="mt-8 bg-blue-50 p-4 rounded-lg border border-blue-200">
+            <h4 class="font-semibold text-blue-800 mb-2"><i class="fas fa-lightbulb text-blue-500 mr-2"></i> Observations Clés</h4>
+            <ul class="list-disc pl-5 space-y-1 text-blue-900">
+                <li>Volkswagen présente la meilleure solvabilité générale du secteur (>2.1)</li>
+                <li>BMW montre une excellente liquidité générale (1.45)</li>
+                <li class="anomaly-indicator">Volvo affiche une productivité exceptionnellement élevée (3.15M€/employé)</li>
+                <li>Daimler montre des ratios de liquidité plus faibles (0.51)</li>
+                <li>Tous les constructeurs maintiennent un financement des immobilisations >1, indiquant une structure financière saine</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 6 - Ratios de Valorisation -->
+<div class="slide">
+    <div class="bg-white rounded-xl shadow-lg p-8 max-w-6xl mx-auto">
+        <h2 class="text-3xl font-bold text-indigo-700 mb-6">
+            <i class="fas fa-chart-line text-indigo-500 mr-3"></i>
+            Analyse des Ratios de Valorisation
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">PER (Price to Earnings Ratio)</h3>
+                <div class="chart-container" style="height: 250px;">
+                    <img src="https://ucarecdn.com/f6472774-b58b-490b-a882-cd0465160dd9/per_price_to_earnings_ratio_relative_scale.png" alt="Graphique PER">
+                </div>
+                <div class="mt-4 text-sm text-gray-700">
+                    <p>Rapport entre le cours de l'action et le bénéfice par action.</p>
+                    <p class="mt-2"><span class="font-semibold">Interprétation :</span> Un PER élevé (>20) peut indiquer des attentes de forte croissance ou une survalorisation.</p>
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">P/B (Price to Book Ratio)</h3>
+                <div class="chart-container" style="height: 250px;">
+                    <img src="https://ucarecdn.com/d0aab827-155f-46ec-b7ae-63e0c743e9d2/p_b_price_to_book_ratio_by_company.png" alt="Graphique P/B">
+                </div>
+                <div class="mt-4 text-sm text-gray-700">
+                    <p>Rapport entre la valeur de marché et la valeur comptable.</p>
+                    <p class="mt-2"><span class="font-semibold">Interprétation :</span> P/B > 1 signifie que le marché valorise l'entreprise au-dessus de ses actifs nets.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-8 bg-green-50 p-4 rounded-lg border border-green-200">
+            <h4 class="font-semibold text-green-800 mb-2"><i class="fas fa-search-dollar text-green-500 mr-2"></i> Perspectives de Marché</h4>
+            <ul class="list-disc pl-5 space-y-1 text-green-900">
+                <li class="anomaly-indicator">Stellantis (2020) et Renault (2021) montrent des PER anormalement élevés (>14)</li>
+                <li class="anomaly-indicator">Renault a enregistré un PER négatif en 2022 (-21), signe de pertes sur cet exercice</li>
+                <li>Daimler est valorisé significativement au-dessus de sa valeur comptable (P/B > 1.4)</li>
+                <li>La tendance du P/B de Stellantis est en baisse notable (1.23 en 2020 à 0.36 en 2023)</li>
+                <li>La plupart des constructeurs ont un PER entre 2 et 9, indiquant des valorisations modérées</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 7 - Ratios de Rentabilité -->
+<div class="slide">
+    <div class="bg-white rounded-xl shadow-lg p-8 max-w-6xl mx-auto">
+        <h2 class="text-3xl font-bold text-indigo-700 mb-6">
+            <i class="fas fa-coins text-indigo-500 mr-3"></i>
+            Analyse des Ratios de Rentabilité
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">ROE (Return on Equity)</h3>
+                <div class="chart-container" style="height: 250px;">
+                    <img src="https://ucarecdn.com/dd4c07c3-3c1d-4d08-8ccf-80706d08b5fc/rendement_des_capitaux_propres_by_company.png" alt="Graphique ROE">
+                </div>
+                <div class="mt-4 text-sm text-gray-700">
+                    <p>Mesure la capacité à générer des profits à partir des capitaux propres investis.</p>
+                    <p class="mt-2"><span class="font-semibold">Interprétation :</span> Un ROE élevé (>15%) indique une utilisation efficace des capitaux propres.</p>
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Marge Nette</h3>
+                <div class="chart-container" style="height: 250px;">
+                    <img src="https://ucarecdn.com/89ebdabf-59cb-4dab-84e4-31044dc6bab2/marge_bnficiaire_nette_by_company.png" alt="Graphique Marge bénéficiaire">
+                </div>
+                <div class="mt-4 text-sm text-gray-700">
+                    <p>Montre le pourcentage de chiffre d'affaires qui se transforme en bénéfice net.</p>
+                    <p class="mt-2"><span class="font-semibold">Interprétation :</span> >10% indique une forte rentabilité, <5% montre des marges serrées.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Rentabilité Économique</h3>
+                <div class="chart-container" style="height: 250px;">
+                    <img src="https://ucarecdn.com/26f46535-6d03-4877-8301-169c619597ad/rentabilit_conomique_by_company.png" alt="Graphique rentabilité économique">
+                </div>
+                <div class="mt-4 text-sm text-gray-700">
+                    <p>Mesure l'efficacité avec laquelle l'entreprise utilise ses actifs pour générer des profits.</p>
+                    <p class="mt-2"><span class="font-semibold">Cible :</span> >7% indique une bonne gestion des actifs.</p>
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">ROA (Return on Assets)</h3>
+                <div class="chart-container" style="height: 250px;">
+                    <img src="https://ucarecdn.com/52470fbc-b2e5-4115-bca7-b2c04b4ad401/roa_return_on_assets_by_company.png" alt="Graphique ROA">
+                </div>
+                <div class="mt-4 text-sm text-gray-700">
+                    <p>Mesure la rentabilité des actifs totaux de l'entreprise.</p>
+                    <p class="mt-2"><span class="font-semibold">Interprétation :</span> >7% indique une excellente rentabilité des actifs.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-8 bg-blue-50 p-4 rounded-lg border border-blue-200">
+            <h4 class="font-semibold text-blue-800 mb-2"><i class="fas fa-lightbulb text-blue-500 mr-2"></i> Observations Clés</h4>
+            <ul class="list-disc pl-5 space-y-1 text-blue-900">
+                <li>Volkswagen montre un excellent ROE (31% en 2022)</li>
+                <li>Stellantis présente une forte amélioration du ROE depuis 2020 (8% à 23%)</li>
+                <li class="anomaly-indicator">Renault affiche des ratios de rentabilité négatifs en 2020 (ROE: -32%, Marge: -18.5%, ROA: -7%)</li>
+                <li>Daimler et BMW montrent une rentabilité économique solide à 9%</li>
+                <li>Volkswagen a connu une forte variation de sa marge nette entre 2022 (16%) et 2023 (7%)</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 8 - Ratios d'Endettement -->
+<div class="slide">
+    <div class="bg-white rounded-xl shadow-lg p-8 max-w-6xl mx-auto">
+        <h2 class="text-3xl font-bold text-indigo-700 mb-6">
+            <i class="fas fa-scale-balanced text-indigo-500 mr-3"></i>
+            Analyse des Ratios d'Endettement
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Gearing Ratio</h3>
+                <div class="chart-container" style="height: 250px;">
+                    <img src="https://ucarecdn.com/83a13029-3b31-4dcf-b294-598d2ae386e6/gearing_by_company.png" alt="Graphique Gearing">
+                </div>
+                <div class="mt-4 text-sm text-gray-700">
+                    <p>Mesure le niveau d'endettement par rapport aux fonds propres.</p>
+                    <p class="mt-2"><span class="font-semibold">Seuil :</span> <0.5 indique un endettement faible, >1 signale un endettement élevé.</p>
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Capacité de Remboursement</h3>
+                <div class="chart-container" style="height: 250px;">
+                    <img src="https://ucarecdn.com/5db725a0-8350-49ee-a8ac-52dff7c445b3/capacit_de_remboursement_by_company.png" alt="Graphique Capacité de remboursement">
+                </div>
+                <div class="mt-4 text-sm text-gray-700">
+                    <p>Indique combien d'années seraient nécessaires pour rembourser la dette avec la capacité d'autofinancement actuelle.</p>
+                    <p class="mt-2"><span class="font-semibold">Seuil :</span> <3 ans indique un bon niveau, >5 ans signale un risque financier élevé.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Indépendance Financière</h3>
+                <div class="chart-container" style="height: 250px;">
+                    <img src="https://ucarecdn.com/1be393c2-9836-4324-83ad-0e6afd33b55a/indpendance_financire_by_company.png" alt="Graphique indépendance financière">
+                </div>
+                <div class="mt-4 text-sm text-gray-700">
+                    <p>Mesure le rapport entre les fonds propres et les dettes.</p>
+                    <p class="mt-2"><span class="font-semibold">Interprétation :</span> >1 indique que les fonds propres couvrent entièrement les dettes.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-8 bg-purple-50 p-4 rounded-lg border border-purple-200">
+            <h4 class="font-semibold text-purple-800 mb-2"><i class="fas fa-chart-bar text-purple-500 mr-2"></i> Tendances Sectorielles</h4>
+            <ul class="list-disc pl-5 space-y-1 text-purple-900">
+                <li class="anomaly-indicator">Renault présente un gearing ratio critique (>2.0) sur toute la période analysée</li>
+                <li>Volkswagen montre un gearing ratio exceptionnellement bas (0.0), indiquant une structure financière très solide</li>
+                <li class="anomaly-indicator">Stellantis a enregistré une capacité de remboursement anormalement négative en 2020 (-7.6 ans)</li>
+                <li>BMW, Daimler et Volkswagen affichent une excellente capacité de remboursement (1.0)</li>
+                <li>Stellantis a considérablement amélioré son gearing ratio (0.72 en 2020 à 0.48 en 2022)</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 9 - Ratios de Rendement Boursier -->
+<div class="slide">
+    <div class="bg-white rounded-xl shadow-lg p-8 max-w-6xl mx-auto">
+        <h2 class="text-3xl font-bold text-indigo-700 mb-6">
+            <i class="fas fa-hand-holding-usd text-indigo-500 mr-3"></i>
+            Analyse des Ratios de Rendement Boursier
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Rendement du Dividende</h3>
+                <div class="chart-container" style="height: 300px;">
+                    <img src="https://ucarecdn.com/8b484b13-ae5c-457f-a58c-c431351a373f/rendement_du_dividende_relative_scale.png" alt="Graphique rendement dividende">
+                </div>
+                <div class="mt-4 text-sm text-gray-700">
+                    <p>Rapport entre le dividende par action et le cours de l'action.</p>
+                    <p class="mt-2"><span class="font-semibold">Cible :</span> Entre 2% et 5% est généralement considéré comme attractif, >5% peut être signe d'un cours déprimé.</p>
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Payout Ratio</h3>
+                <div class="chart-container" style="height: 300px;">
+                    <img src="https://ucarecdn.com/e0f903fb-a620-4600-9c0f-9cdf3eec30df/payout_ratio_relative_scale.png" alt="Graphique Payout Ratio">
+                </div>
+                <div class="mt-4 text-sm text-gray-700">
+                    <p>Proportion des bénéfices distribués sous forme de dividendes.</p>
+                    <p class="mt-2"><span class="font-semibold">Interprétation :</span> <30% indique une politique de réinvestissement, >60% montre une forte distribution.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-8 bg-orange-50 p-4 rounded-lg border border-orange-200">
+            <h4 class="font-semibold text-orange-800 mb-2"><i class="fas fa-star text-orange-500 mr-2"></i> Points Notables</h4>
+            <ul class="list-disc pl-5 space-y-1 text-orange-900">
+                <li class="anomaly-indicator">Stellantis présente un rendement de dividende exceptionnel (17%) sur toute la période</li>
+                <li class="anomaly-indicator">Stellantis (2020) affiche un payout ratio anormalement élevé (1.17), distribuant plus que ses bénéfices</li>
+                <li class="anomaly-indicator">Renault (2022) montre un payout ratio négatif (-1.46), signe de distribution malgré des pertes</li>
+                <li>Volkswagen, Daimler et BMW maintiennent des rendements attractifs entre 9% et 11%</li>
+                <li>La majorité des constructeurs ont adopté une politique de distribution équilibrée (30-40% des bénéfices)</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 10 - Ratios de Trésorerie -->
+<div class="slide">
+    <div class="bg-white rounded-xl shadow-lg p-8 max-w-6xl mx-auto">
+        <h2 class="text-3xl font-bold text-indigo-700 mb-6">
+            <i class="fas fa-wallet text-indigo-500 mr-3"></i>
+            Analyse des Ratios de Trésorerie
+        </h2>
+        
+        <div class="mt-2">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Trésorerie Immédiate</h3>
+            <div class="chart-container" style="height: 400px;">
+                <img src="https://ucarecdn.com/679e361a-e245-4e12-86a7-6e4a62c2fb43/trsorerie_immdiate_by_company.png" alt="Graphique trésorerie immédiate">
+            </div>
+            <div class="mt-4 text-sm text-gray-700">
+                <p>Rapport entre les disponibilités et les dettes à court terme.</p>
+                <p class="mt-2"><span class="font-semibold">Interprétation :</span> >0.3 indique une situation acceptable, >1 montre une excellente liquidité.</p>
+            </div>
+        </div>
+        
+        <div class="mt-8 bg-teal-50 p-4 rounded-lg border border-teal-200">
+            <h4 class="font-semibold text-teal-800 mb-2"><i class="fas fa-money-bill-wave text-teal-500 mr-2"></i> Analyse de la Trésorerie</h4>
+            <ul class="list-disc pl-5 space-y-1 text-teal-900">
+                <li>Stellantis maintient la meilleure position de trésorerie immédiate du secteur (entre 0.59 et 0.77)</li>
+                <li>Daimler présente une trésorerie immédiate très faible (0.09), potentiellement préoccupante</li>
+                <li>Volkswagen a amélioré sa trésorerie immédiate entre 2022 (0.16) et 2023 (0.21)</li>
+                <li>Volvo montre une tendance à la baisse de sa trésorerie immédiate (0.49 en 2021 à 0.30 en 2023)</li>
+                <li>Renault maintient une trésorerie immédiate relativement stable (0.27-0.33)</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <!-- Slide 11 - Détection des Anomalies -->
+        <div class="slide">
+            <div class="bg-white rounded-xl shadow-lg p-8 max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold text-indigo-700 mb-6">
+                    <i class="fas fa-search text-indigo-500 mr-3"></i>
+                    Détection des Valeurs Aberrantes
+                </h2>
+                
+                <div class="space-y-6">
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h3 class="font-semibold text-lg text-gray-800 mb-3">Méthode Statistique Utilisée</h3>
+                        <p class="text-gray-700">
+                            La détection des anomalies repose sur la méthode de l'intervalle interquartile (IQR) :
+                        </p>
+                        <div class="mt-4 grid grid-cols-4 gap-2 text-center">
+                            <div class="bg-indigo-100 p-2 rounded">
+                                <div class="text-xs font-semibold">Q1</div>
+                                <div class="font-bold">25ème percentile</div>
+                            </div>
+                            <div class="bg-indigo-100 p-2 rounded">
+                                <div class="text-xs font-semibold">Q3</div>
+                                <div class="font-bold">75ème percentile</div>
+                            </div>
+                            <div class="bg-indigo-100 p-2 rounded">
+                                <div class="text-xs font-semibold">IQR</div>
+                                <div class="font-bold">Q3 - Q1</div>
+                            </div>
+                            <div class="bg-indigo-100 p-2 rounded">
+                                <div class="text-xs font-semibold">Seuils</div>
+                                <div class="font-bold">Q1-1.5×IQR<br>Q3+1.5×IQR</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="font-semibold text-lg text-gray-800 mb-3">Exemples d'Anomalies Détectées</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                                <div class="flex items-center mb-2">
+                                    <div class="company-color-renault w-6 h-6 rounded-full mr-3"></div>
+                                    <span class="font-semibold">Renault - ROE 2020</span>
+                                </div>
+                                <div class="grid grid-cols-3 gap-4 mt-3 text-sm">
+                                    <div class="bg-white p-2 rounded border">
+                                        <div>Valeur</div>
+                                        <div class="font-bold text-red-600">-32%</div>
+                                    </div>
+                                    <div class="bg-white p-2 rounded border">
+                                        <div>Moyenne sectorielle</div>
+                                        <div class="font-bold">15.2%</div>
+                                    </div>
+                                    <div class="bg-white p-2 rounded border">
+                                        <div>Seuil inférieur</div>
+                                        <div class="font-bold">1.5%</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                                <div class="flex items-center mb-2">
+                                    <div class="company-color-stellantis w-6 h-6 rounded-full mr-3"></div>
+                                    <span class="font-semibold">Stellantis - Rendement Dividende</span>
+                                </div>
+                                <div class="grid grid-cols-3 gap-4 mt-3 text-sm">
+                                    <div class="bg-white p-2 rounded border">
+                                        <div>Valeur</div>
+                                        <div class="font-bold text-red-600">17%</div>
+                                    </div>
+                                    <div class="bg-white p-2 rounded border">
+                                        <div>Moyenne sectorielle</div>
+                                        <div class="font-bold">7.4%</div>
+                                    </div>
+                                    <div class="bg-white p-2 rounded border">
+                                        <div>Seuil supérieur</div>
+                                        <div class="font-bold">14.1%</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                                <div class="flex items-center mb-2">
+                                    <div class="company-color-volvo w-6 h-6 rounded-full mr-3"></div>
+                                    <span class="font-semibold">Volvo - Productivité</span>
+                                </div>
+                                <div class="grid grid-cols-3 gap-4 mt-3 text-sm">
+                                    <div class="bg-white p-2 rounded border">
+                                        <div>Valeur</div>
+                                        <div class="font-bold text-red-600">3.15M€</div>
+                                    </div>
+                                    <div class="bg-white p-2 rounded border">
+                                        <div>Moyenne sectorielle</div>
+                                        <div class="font-bold">450K€</div>
+                                    </div>
+                                    <div class="bg-white p-2 rounded border">
+                                        <div>Seuil supérieur</div>
+                                        <div class="font-bold">856K€</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                                <div class="flex items-center mb-2">
+                                    <div class="company-color-renault w-6 h-6 rounded-full mr-3"></div>
+                                    <span class="font-semibold">Renault - Marge Nette 2020</span>
+                                </div>
+                                <div class="grid grid-cols-3 gap-4 mt-3 text-sm">
+                                    <div class="bg-white p-2 rounded border">
+                                        <div>Valeur</div>
+                                        <div class="font-bold text-red-600">-18.5%</div>
+                                    </div>
+                                    <div class="bg-white p-2 rounded border">
+                                        <div>Moyenne sectorielle</div>
+                                        <div class="font-bold">7.1%</div>
+                                    </div>
+                                    <div class="bg-white p-2 rounded border">
+                                        <div>Seuil inférieur</div>
+                                        <div class="font-bold">0.7%</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <h3 class="font-semibold text-lg text-green-800 mb-2"><i class="fas fa-file-alt text-green-500 mr-2"></i> Rapport Complet des Anomalies</h3>
+                        <p class="text-green-900">
+                            Un rapport détaillé a été généré automatiquement, listant toutes les valeurs identifiées comme potentiellement aberrantes avec :
+                        </p>
+                        <ul class="list-disc pl-5 mt-2 space-y-1 text-green-900">
+                            <li>Le ratio concerné</li>
+                            <li>L'entreprise et l'année</li>
+                            <li>La valeur anormale</li>
+                            <li>Les seuils calculés</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12 - Classification par Machine Learning -->
+        <div class="slide">
+            <div class="bg-white rounded-xl shadow-lg p-8 max-w-6xl mx-auto">
+                <h2 class="text-3xl font-bold text-indigo-700 mb-6">
+                    <i class="fas fa-robot text-indigo-500 mr-3"></i>
+                    Classification des Entreprises par Machine Learning
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Principes de Classification</h3>
+                        <div class="mt-4 space-y-4 text-gray-700">
+                            <p>Le machine learning nous permet de classer automatiquement les entreprises selon leur santé financière en se basant sur l'ensemble de leurs ratios.</p>
+                            
+                            <div class="bg-indigo-50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-indigo-800 mb-2">Méthodologie</h4>
+                                <ol class="list-decimal pl-5 space-y-1">
+                                    <li>Collecte et normalisation des ratios financiers</li>
+                                    <li>Pondération des ratios selon leur importance relative</li>
+                                    <li>Réduction de dimension par ACP (Analyse en Composantes Principales)</li>
+                                    <li>Application de l'algorithme de clustering K-Means</li>
+                                    <li>Classification des entreprises en 3 catégories: Bonne, Moyenne, Fragile</li>
+                                </ol>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <h4 class="font-semibold text-gray-800 mb-2">Avantages de cette approche</h4>
+                                <ul class="list-disc pl-5 space-y-1">
+                                    <li>Analyse objective basée sur des données quantitatives</li>
+                                    <li>Prise en compte simultanée de multiples ratios</li>
+                                    <li>Classification automatique facilitant le benchmarking</li>
+                                    <li>Détection de tendances et patterns invisibles à l'œil nu</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Système de Score Pondéré</h3>
+                        <div class="bg-white p-4 rounded-lg border border-gray-200">
+                            <h4 class="font-semibold mb-2">Formule de calcul du score</h4>
+                            <div class="bg-gray-50 p-3 rounded-lg text-sm font-mono">
+                                Score = Σ (Ratio<sub>i</sub> × Poids<sub>i</sub>) / Σ Poids<sub>i</sub>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <h4 class="font-semibold mb-2">Pondération des familles de ratios</h4>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between items-center">
+                                        <span>Rentabilité</span>
+                                        <div class="w-1/2 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-indigo-600 h-2 rounded-full" style="width: 40%"></div>
+                                        </div>
+                                        <span class="ml-2">40%</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span>Endettement</span>
+                                        <div class="w-1/2 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-indigo-600 h-2 rounded-full" style="width: 30%"></div>
+                                        </div>
+                                        <span class="ml-2">30%</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span>Liquidité</span>
+                                        <div class="w-1/2 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-indigo-600 h-2 rounded-full" style="width: 15%"></div>
+                                        </div>
+                                        <span class="ml-2">15%</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span>Généraux</span>
+                                        <div class="w-1/2 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-indigo-600 h-2 rounded-full" style="width: 10%"></div>
+                                        </div>
+                                        <span class="ml-2">10%</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span>Valorisation</span>
+                                        <div class="w-1/2 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-indigo-600 h-2 rounded-full" style="width: 5%"></div>
+                                        </div>
+                                        <span class="ml-2">5%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <h4 class="font-semibold text-gray-800 mb-2">Seuils de Classification</h4>
+                            <div class="grid grid-cols-3 gap-4 text-center">
+                                <div class="p-3 rounded-lg" style="background-color: #FC8181;">
+                                    <div class="text-white font-bold">Fragile</div>
+                                    <div class="mt-1 text-sm text-white">Score < 0.4</div>
+                                </div>
+                                <div class="p-3 rounded-lg" style="background-color: #F6E05E;">
+                                    <div class="text-gray-800 font-bold">Moyenne</div>
+                                    <div class="mt-1 text-sm text-gray-800">0.4 ≤ Score < 0.7</div>
+                                </div>
+                                <div class="p-3 rounded-lg" style="background-color: #68D391;">
+                                    <div class="text-gray-800 font-bold">Bonne</div>
+                                    <div class="mt-1 text-sm text-gray-800">Score ≥ 0.7</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">K-Means Clustering</h3>
+                    <div class="chart-container" style="height: 400px;">
+                        <img src="https://ucarecdn.com/a74f5332-ee75-4608-837a-5ab1fed90ad1/kmeans_clustering.png" alt="K-Means Clustering avec ACP">
+                    </div>
+                                            <div class="mt-4 text-gray-700">
+                        <p>Le graphique ci-dessus montre les résultats de l'analyse par K-Means après réduction dimensionnelle par ACP (Analyse en Composantes Principales). Chaque point représente un constructeur à une année donnée, et les couleurs correspondent aux trois clusters identifiés.</p>
+                        <div class="mt-2 text-sm bg-indigo-50 p-3 rounded-lg">
+                            <p class="italic font-semibold">Interprétation :</p>
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li>Le <span class="font-semibold text-green-700">cluster vert (2.0)</span> représente les entreprises avec une très bonne santé financière</li>
+                                <li>Le <span class="font-semibold text-blue-700">cluster bleu (0.0)</span> correspond aux entreprises avec une santé financière moyenne</li>
+                                <li>Le <span class="font-semibold text-teal-700">cluster turquoise (1.0)</span> regroupe des points atypiques avec certains indicateurs exceptionnels</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13 - Analyse des Scores et Catégories -->
+        <div class="slide">
+            <div class="bg-white rounded-xl shadow-lg p-8 max-w-6xl mx-auto">
+                <h2 class="text-3xl font-bold text-indigo-700 mb-6">
+                    <i class="fas fa-chart-bar text-indigo-500 mr-3"></i>
+                    Évolution des Scores et Catégories
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Distribution des Scores</h3>
+                        <div class="chart-container" style="height: 350px;">
+                            <img src="https://ucarecdn.com/0507ea44-767c-4aae-b800-d44f42aa2d7c/distribution_scores_ponderes.png" alt="Distribution des scores pondérés">
+                        </div>
+                        <div class="mt-4 text-sm text-gray-700">
+                            <p>Ce graphique montre la distribution des scores de santé financière pondérés par notre modèle et les seuils de classification des entreprises.</p>
+                            <ul class="list-disc pl-5 mt-2 space-y-1">
+                                <li>65% des observations sont dans la catégorie "Moyenne" (scores entre 0.4 et 0.7)</li>
+                                <li>29% des observations sont dans la catégorie "Bonne" (scores ≥ 0.7)</li>
+                                <li>Seulement 6% des observations sont dans la catégorie "Fragile" (scores < 0.4)</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Scores par Entreprise/Année</h3>
+                        <div class="chart-container" style="height: 350px;">
+                            <img src="https://ucarecdn.com/e297212d-ab8e-49f3-9c9d-9749e3c21ea0/comparaison_scores_ponderes.png" alt="Comparaison des scores pondérés">
+                        </div>
+                        <div class="mt-4 text-sm text-gray-700">
+                            <p>Ce graphique permet de comparer directement les scores obtenus par chaque entreprise au cours des années étudiées.</p>
+                            <div class="mt-2 bg-indigo-50 p-3 rounded-lg">
+                                <p class="font-semibold">Observations clés :</p>
+                                <ul class="list-disc pl-5 space-y-1">
+                                    <li>Stellantis 2022 (1.12) présente le meilleur score, suivi de Stellantis 2021-2023</li>
+                                    <li>BMW et Volkswagen maintiennent des scores dans la catégorie "Bonne"</li>
+                                    <li>Renault et Volvo sont principalement dans la catégorie "Moyenne"</li>
+                                    <li>Seul Stellantis 2020 (0.32) tombe dans la catégorie "Fragile"</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Évolution des Scores Moyens</h3>
+                        <div class="chart-container" style="height: 300px;">
+                            <img src="https://ucarecdn.com/706d7d9c-d3e3-4fb7-a6db-0eefcf84173e/comparaison_scores_moyens_par_annee.png" alt="Évolution des scores moyens par année">
+                        </div>
+                        <div class="mt-4 text-sm text-gray-700">
+                            <p>Ce graphique montre l'évolution du score moyen de l'ensemble des constructeurs par année.</p>
+                            <p class="mt-2">On observe une nette amélioration entre 2020 (0.43) et 2022 (0.75), suivie d'une légère baisse en 2023 (0.58), ce qui reflète l'évolution du secteur après la crise Covid.</p>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Évolution des Catégories</h3>
+                        <div class="chart-container" style="height: 300px;">
+                            <img src="https://ucarecdn.com/4a986300-6048-43bf-9ffb-0106b8a2e6c1/comparaison_categories_par_annee.png" alt="Évolution des catégories par année">
+                        </div>
+                        <div class="mt-4 text-sm text-gray-700">
+                            <p>Ce graphique montre la répartition des catégories de santé financière par année.</p>
+                            <ul class="list-disc pl-5 mt-2 space-y-1">
+                                <li>2020 : 50% des entreprises en situation "Fragile" au début de la pandémie</li>
+                                <li>2022 : Année la plus favorable avec 50% des entreprises en catégorie "Bonne"</li>
+                                <li>2023 : Prédominance de la catégorie "Moyenne" (83%)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8 bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <h4 class="font-semibold text-blue-800 mb-2"><i class="fas fa-lightbulb text-blue-500 mr-2"></i> Synthèse de l'Analyse</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-white p-3 rounded-lg border border-blue-100">
+                            <h5 class="font-semibold text-indigo-700 mb-2">Par Entreprise</h5>
+                            <ul class="text-sm space-y-1 text-gray-700">
+                                <li><span class="font-semibold">Stellantis :</span> <span class="category-badge good">Bonne</span> Meilleure progression (2020→2022)</li>
+                                <li><span class="font-semibold">BMW :</span> <span class="category-badge good">Bonne</span> Performance constante</li>
+                                <li><span class="font-semibold">Volkswagen :</span> <span class="category-badge good">Bonne</span> Structure solide</li>
+                                <li><span class="font-semibold">Volvo :</span> <span class="category-badge average">Moyenne</span> Performance stable</li>
+                                <li><span class="font-semibold">Renault :</span> <span class="category-badge average">Moyenne</span> En progression</li>
+                                <li><span class="font-semibold">Daimler :</span> <span class="category-badge average">Moyenne</span> Position médiane</li>
+                            </ul>
+                        </div>
+                        <div class="bg-white p-3 rounded-lg border border-blue-100">
+                            <h5 class="font-semibold text-indigo-700 mb-2">Par Année</h5>
+                            <ul class="text-sm space-y-1 text-gray-700">
+                                <li><span class="font-semibold">2020 :</span> Impact majeur de la crise COVID</li>
+                                <li><span class="font-semibold">2021 :</span> Reprise progressive du secteur</li>
+                                <li><span class="font-semibold">2022 :</span> Meilleure année pour le secteur</li>
+                                <li><span class="font-semibold">2023 :</span> Pressions sur les marges, impact de l'inflation</li>
+                            </ul>
+                        </div>
+                        <div class="bg-white p-3 rounded-lg border border-blue-100">
+                            <h5 class="font-semibold text-indigo-700 mb-2">Points Importants</h5>
+                            <ul class="text-sm space-y-1 text-gray-700">
+                                <li>Bonne résilience globale du secteur après la crise</li>
+                                <li>Majorité des entreprises maintiennent un score > 0.4</li>
+                                <li>Importance des stratégies d'adaptation post-COVID</li>
+                                <li>Impact visible des difficultés d'approvisionnement</li>
+                                <li>Tendance à la consolidation du secteur</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 14 - Conclusion -->
+        <div class="slide">
+            <div class="flex flex-col items-center justify-center h-full">
+                <div class="bg-white rounded-xl shadow-2xl p-8 max-w-3xl text-center">
+                    <h2 class="text-3xl font-bold text-indigo-700 mb-6">
+                        <i class="fas fa-flag-checkered text-indigo-500 mr-3"></i>
+                        Conclusions et Perspectives
+                    </h2>
+                    
+                    <div class="space-y-6 text-gray-700 text-left">
+                        <div class="flex items-start">
+                            <div class="bg-indigo-100 p-2 rounded-full mr-4 mt-1">
+                                <i class="fas fa-check text-indigo-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-lg text-gray-800">Principales Observations</h3>
+                                <ul class="list-disc pl-5 mt-2 space-y-1">
+                                    <li>Volkswagen présente la structure financière la plus solide avec un gearing nul et un ROE élevé (31%)</li>
+                                    <li>Stellantis montre une nette amélioration de sa rentabilité depuis 2020 et un dividende exceptionnellement généreux</li>
+                                    <li>BMW et Daimler maintiennent des performances stables et équilibrées</li>
+                                    <li>Renault reste fragile avec des ratios d'endettement élevés (gearing >2) et une rentabilité volatile</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="bg-indigo-100 p-2 rounded-full mr-4 mt-1">
+                                <i class="fas fa-exclamation text-indigo-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-lg text-gray-800">Points de Vigilance</h3>
+                                <ul class="list-disc pl-5 mt-2 space-y-1">
+                                    <li>Impact significatif de la crise COVID en 2020, particulièrement pour Renault</li>
+                                    <li>Pressions sur les marges dues à la transition électrique et aux coûts des matières premières</li>
+                                    <li>Politiques de dividendes parfois déconnectées des performances (Stellantis, Renault)</li>
+                                    <li>Tendance générale à une légère dégradation des scores en 2023 par rapport à 2022</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="bg-indigo-100 p-2 rounded-full mr-4 mt-1">
+                                <i class="fas fa-chart-line text-indigo-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-lg text-gray-800">Perspectives</h3>
+                                <p class="mt-2">
+                                    Cette analyse pourrait être enrichie par une comparaison avec les constructeurs asiatiques et américains, ainsi que par l'intégration d'indicateurs spécifiques à la transition électrique et à la durabilité environnementale.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 pt-6 border-t border-gray-200">
+                        <p class="text-gray-500">
+                            Merci pour votre attention.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour l'agrandissement des images -->
+    <div id="imageModal" class="modal">
+        <span class="close-modal">&times;</span>
+        <img class="modal-content" id="enlargedImage">
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const progress = document.getElementById('progress');
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('enlargedImage');
+            const closeModal = document.querySelector('.close-modal');
+            const chartContainers = document.querySelectorAll('.chart-container');
+            
+            let currentSlide = 0;
+            const totalSlides = slides.length;
+            
+            // Initialize first slide
+            showSlide(currentSlide);
+            
+            // Next button click handler
+            nextBtn.addEventListener('click', function() {
+                if (currentSlide < totalSlides - 1) {
+                    currentSlide++;
+                    showSlide(currentSlide);
+                }
+            });
+            
+            // Previous button click handler
+            prevBtn.addEventListener('click', function() {
+                if (currentSlide > 0) {
+                    currentSlide--;
+                    showSlide(currentSlide);
+                }
+            });
+            
+            // Keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowRight') {
+                    if (currentSlide < totalSlides - 1) {
+                        currentSlide++;
+                        showSlide(currentSlide);
+                    }
+                } else if (e.key === 'ArrowLeft') {
+                    if (currentSlide > 0) {
+                        currentSlide--;
+                        showSlide(currentSlide);
+                    }
+                } else if (e.key === 'Escape') {
+                    modal.style.display = 'none';
+                }
+            });
+            
+            // Show specific slide
+            function showSlide(n) {
+                // Hide all slides
+                slides.forEach(slide => {
+                    slide.classList.remove('active-slide');
+                });
+                
+                // Show current slide
+                slides[n].classList.add('active-slide');
+                
+                // Update progress bar
+                const progressPercentage = ((n + 1) / totalSlides) * 100;
+                progress.style.width = `${progressPercentage}%`;
+                
+                // Disable/enable navigation buttons
+                prevBtn.disabled = n === 0;
+                nextBtn.disabled = n === totalSlides - 1;
+                
+                // Scroll to top of slide
+                window.scrollTo(0, 0);
+            }
+            
+            // Touch swipe support for mobile
+            let touchStartX = 0;
+            let touchEndX = 0;
+            
+            document.addEventListener('touchstart', function(e) {
+                touchStartX = e.changedTouches[0].screenX;
+            }, false);
+            
+            document.addEventListener('touchend', function(e) {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            }, false);
+            
+            function handleSwipe() {
+                if (touchEndX < touchStartX && currentSlide < totalSlides - 1) {
+                    // Swipe left - next slide
+                    currentSlide++;
+                    showSlide(currentSlide);
+                }
+                
+                if (touchEndX > touchStartX && currentSlide > 0) {
+                    // Swipe right - previous slide
+                    currentSlide--;
+                    showSlide(currentSlide);
+                }
+            }
+            
+            // Image zoom functionality
+            chartContainers.forEach(container => {
+                container.addEventListener('click', function() {
+                    const img = this.querySelector('img');
+                    if (img) {
+                        modal.style.display = 'block';
+                        modalImg.src = img.src;
+                    }
+                });
+            });
+            
+            // Close modal
+            closeModal.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+            
+            // Click outside to close
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+    </script> 
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const progress = document.getElementById('progress');
+            
+            let currentSlide = 0;
+            const totalSlides = slides.length;
+            
+            // Initialize first slide
+            showSlide(currentSlide);
+            
+            // Next button click handler
+            nextBtn.addEventListener('click', function() {
+                if (currentSlide < totalSlides - 1) {
+                    currentSlide++;
+                    showSlide(currentSlide);
+                }
+            });
+            
+            // Previous button click handler
+            prevBtn.addEventListener('click', function() {
+                if (currentSlide > 0) {
+                    currentSlide--;
+                    showSlide(currentSlide);
+                }
+            });
+            
+            // Keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowRight') {
+                    if (currentSlide < totalSlides - 1) {
+                        currentSlide++;
+                        showSlide(currentSlide);
+                    }
+                } else if (e.key === 'ArrowLeft') {
+                    if (currentSlide > 0) {
+                        currentSlide--;
+                        showSlide(currentSlide);
+                    }
+                }
+            });
+            
+            // Show specific slide
+            function showSlide(n) {
+                // Hide all slides
+                slides.forEach(slide => {
+                    slide.classList.remove('active-slide');
+                });
+                
+                // Show current slide
+                slides[n].classList.add('active-slide');
+                
+                // Update progress bar
+                const progressPercentage = ((n + 1) / totalSlides) * 100;
+                progress.style.width = `${progressPercentage}%`;
+                
+                // Disable/enable navigation buttons
+                prevBtn.disabled = n === 0;
+                nextBtn.disabled = n === totalSlides - 1;
+                
+                // Scroll to top of slide
+                window.scrollTo(0, 0);
+            }
+            
+            // Touch swipe support for mobile
+            let touchStartX = 0;
+            let touchEndX = 0;
+            
+            document.addEventListener('touchstart', function(e) {
+                touchStartX = e.changedTouches[0].screenX;
+            }, false);
+            
+            document.addEventListener('touchend', function(e) {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            }, false);
+            
+            function handleSwipe() {
+                if (touchEndX < touchStartX && currentSlide < totalSlides - 1) {
+                    // Swipe left - next slide
+                    currentSlide++;
+                    showSlide(currentSlide);
+                }
+                
+                if (touchEndX > touchStartX && currentSlide > 0) {
+                    // Swipe right - previous slide
+                    currentSlide--;
+                    showSlide(currentSlide);
+                }
+            }
+        });
+    </script>
 </body>
 </html>
